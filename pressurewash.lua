@@ -1,10 +1,10 @@
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
 local Window = Rayfield:CreateWindow({
-   Name = "My Hub",
+   Name = "Pressure Wash Incremental",
    Icon = 0,
-   LoadingTitle = "My Hub",
-   LoadingSubtitle = "by ketia",
+   LoadingTitle = "Pressure Wash Incremental",
+   LoadingSubtitle = "by tia",
    Theme = "Default",
    ToggleUIKeybind = "K",
    DisableRayfieldPrompts = false,
@@ -13,7 +13,7 @@ local Window = Rayfield:CreateWindow({
    ConfigurationSaving = {
       Enabled = true,
       FolderName = nil,
-      FileName = "MyHub"
+      FileName = "Pressure Wash Incremental"
    },
 
    KeySystem = false
