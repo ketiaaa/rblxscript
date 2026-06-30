@@ -28,6 +28,21 @@ local PlayerTab = Window:CreateTab("Player", "user")
 local MiscTab = Window:CreateTab("Misc", "settings")
 
 -- ══════════════════════════════
+--        REMOTES
+-- ══════════════════════════════
+
+local spawnEvent = game:GetService("ReplicatedStorage").Remotes.SpawnDirtClient
+local washEvent = game:GetService("ReplicatedStorage").Remotes.WashDirt
+local updateEvent = game:GetService("ReplicatedStorage").Remotes.UpdateWashingStatus
+
+local dirtQueue = {}
+
+-- Listen for new dirt spawning and queue UUIDs
+spawnEvent.OnClientEvent:Connect(function(uuid, dirtType, ...)
+   table.insert(dirtQueue, uuid)
+end)
+
+-- ══════════════════════════════
 --        MAIN TAB
 -- ══════════════════════════════
 
@@ -80,6 +95,36 @@ game:GetService("RunService").Stepped:Connect(function()
                part.CanCollide = false
             end
          end
+      end
+   end
+end)
+
+PlayerTab:CreateSection("Auto Wash")
+
+PlayerTab:CreateToggle({
+   Name = "Auto Wash",
+   CurrentValue = false,
+   Flag = "AutoWash",
+   Callback = function(Value)
+      _G.AutoWash = Value
+      Rayfield:Notify({
+         Title = "Auto Wash",
+         Content = Value and "Auto Wash enabled!" or "Auto Wash disabled.",
+         Duration = 3,
+         Image = Value and "check" or "x"
+      })
+   end,
+})
+
+PlayerTab:CreateLabel("Dirt in queue: 0", "droplets", Color3.fromRGB(255, 255, 255), false)
+
+-- Auto wash loop
+task.spawn(function()
+   while true do
+      task.wait(0.05)
+      if _G.AutoWash and #dirtQueue > 0 then
+         local uuid = table.remove(dirtQueue, 1)
+         washEvent:FireServer(uuid)
       end
    end
 end)
