@@ -331,15 +331,18 @@ EngineerTab:CreateToggle({
 
 task.spawn(function()
    while true do
-      task.wait(0.5)
+      task.wait(1)
       if _G.AutoPressureDoubleRebirth then
          pressureEvent:FireServer("Pressure_DoubleRebirthValue", false)
+         task.wait(1)
       end
       if _G.AutoPressureDoubleDirt then
          pressureEvent:FireServer("Pressure_DoubleDirtValue", false)
+         task.wait(1)
       end
       if _G.AutoIncreasePressureValue then
          pressureEvent:FireServer("Pressure_IncreasePressureValue", false)
+         task.wait(1)
       end
    end
 end)
