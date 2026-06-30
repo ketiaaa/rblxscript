@@ -161,6 +161,33 @@ PlayerTab:CreateToggle({
    end,
 })
 
+PlayerTab:CreateToggle({
+   Name = "Auto Buy Double Dirt Density",
+   CurrentValue = false,
+   Flag = "AutoDoubleDirtDensity",
+   Callback = function(Value)
+      _G.AutoDoubleDirtDensity = Value
+   end,
+})
+
+PlayerTab:CreateToggle({
+   Name = "Auto Buy Expand Spray Radius",
+   CurrentValue = false,
+   Flag = "AutoExpandSprayRadius",
+   Callback = function(Value)
+      _G.AutoExpandSprayRadius = Value
+   end,
+})
+
+PlayerTab:CreateToggle({
+   Name = "Auto Buy Boost Spawn Rate",
+   CurrentValue = false,
+   Flag = "AutoBoostSpawnRate",
+   Callback = function(Value)
+      _G.AutoBoostSpawnRate = Value
+   end,
+})
+
 task.spawn(function()
    while true do
       task.wait(0.5)
@@ -172,6 +199,15 @@ task.spawn(function()
       end
       if _G.AutoDirtAmount then
          upgradeEvent:FireServer("DirtAmount", false)
+      end
+      if _G.AutoDoubleDirtDensity then
+      upgradeEvent:FireServer("DoubleDirtDensity", false)
+      end
+      if _G.AutoExpandSprayRadius then
+      upgradeEvent:FireServer("ExpandSprayRadius", false)
+      end
+      if _G.AutoBoostSpawnRate then
+      upgradeEvent:FireServer("BoostSpawnRate", false)
       end
    end
 end)
@@ -189,7 +225,7 @@ PlayerTab:CreateToggle({
 
 task.spawn(function()
    while true do
-      task.wait(0.05)
+      task.wait(0.2)
       if _G.AutoSoap then
          soapEvent:FireServer()
       end
