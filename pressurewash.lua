@@ -31,6 +31,7 @@ local rebirthEvent = game:GetService("ReplicatedStorage").Remotes.RequestRebirth
 local soapEvent = game:GetService("ReplicatedStorage").Remotes.ClickSoapBottle
 local padEvent = game:GetService("ReplicatedStorage").Remotes.BuyPad
 local pressureEvent = game:GetService("ReplicatedStorage").Remotes.AddPressure
+local tierEvent = game:GetService("ReplicatedStorage").Remotes.RequestTierAdvance
 
 local dirtQueue = {}
 
@@ -194,6 +195,8 @@ task.spawn(function()
       end
    end
 end)
+
+PlayerTab:CreateSection("Soap Upgrades")
 
 PlayerTab:CreateToggle({
    Name = "Auto Buy Double Rebirth Value",
@@ -366,6 +369,26 @@ task.spawn(function()
    end
 end)
 
+MiscTab:CreateSection("Tier Advance")
+
+MiscTab:CreateToggle({
+   Name = "Auto Tier Advance",
+   CurrentValue = false,
+   Flag = "AutoTierAdvance",
+   Callback = function(Value)
+      _G.AutoTierAdvance = Value
+   end,
+})
+
+task.spawn(function()
+   while true do
+      task.wait(1)
+      if _G.AutoTierAdvance then
+         tierEvent:FireServer(true)
+      end
+   end
+end)
+
 MiscTab:CreateSection("Buy Pads")
 
 MiscTab:CreateToggle({
@@ -408,25 +431,6 @@ game:GetService("Players").LocalPlayer.Idled:Connect(function()
    end
 end)
 
-MiscTab:CreateSection("Tier Advance")
-
-MiscTab:CreateToggle({
-   Name = "Auto Tier Advance",
-   CurrentValue = false,
-   Flag = "AutoTierAdvance",
-   Callback = function(Value)
-      _G.AutoTierAdvance = Value
-   end,
-})
-
-task.spawn(function()
-   while true do
-      task.wait(1)
-      if _G.AutoTierAdvance then
-         game:GetService("ReplicatedStorage").Remotes.RequestTierAdvance:FireServer(true)
-      end
-   end
-end)
 -- ══════════════════════════════
 --         DONE
 -- ══════════════════════════════
