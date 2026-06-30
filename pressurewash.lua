@@ -431,20 +431,35 @@ end)
 MiscTab:CreateSection("Buy Pads")
 
 MiscTab:CreateToggle({
-   Name = "Auto Buy All Pads (Tree 1-1 to 1-20)",
+   Name = "Auto Buy Tree1 Pads (1-20)",
    CurrentValue = false,
-   Flag = "AutoBuyPads",
+   Flag = "AutoBuyTree1",
    Callback = function(Value)
-      _G.AutoBuyPads = Value
+      _G.AutoBuyTree1 = Value
+   end,
+})
+
+MiscTab:CreateToggle({
+   Name = "Auto Buy Tree2 Pads (1-20)",
+   CurrentValue = false,
+   Flag = "AutoBuyTree2",
+   Callback = function(Value)
+      _G.AutoBuyTree2 = Value
    end,
 })
 
 task.spawn(function()
    while true do
       task.wait(0.5)
-      if _G.AutoBuyPads then
+      if _G.AutoBuyTree1 then
          for i = 1, 20 do
             padEvent:FireServer("Tree1-" .. i)
+            task.wait(0.1)
+         end
+      end
+      if _G.AutoBuyTree2 then
+         for i = 1, 20 do
+            padEvent:FireServer("Tree2-" .. i)
             task.wait(0.1)
          end
       end
