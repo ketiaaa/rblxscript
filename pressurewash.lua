@@ -44,36 +44,6 @@ MainTab:CreateParagraph({
 
 PlayerTab:CreateSection("Movement")
 
-PlayerTab:CreateSlider({
-   Name = "Walk Speed",
-   Range = {16, 250},
-   Increment = 1,
-   Suffix = "ws",
-   CurrentValue = 16,
-   Flag = "WalkSpeed",
-   Callback = function(Value)
-      local char = game.Players.LocalPlayer.Character
-      if char and char:FindFirstChild("Humanoid") then
-         char.Humanoid.WalkSpeed = Value
-      end
-   end,
-})
-
-PlayerTab:CreateSlider({
-   Name = "Jump Power",
-   Range = {50, 500},
-   Increment = 10,
-   Suffix = "jp",
-   CurrentValue = 50,
-   Flag = "JumpPower",
-   Callback = function(Value)
-      local char = game.Players.LocalPlayer.Character
-      if char and char:FindFirstChild("Humanoid") then
-         char.Humanoid.JumpPower = Value
-      end
-   end,
-})
-
 PlayerTab:CreateToggle({
    Name = "Infinite Jump",
    CurrentValue = false,
