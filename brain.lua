@@ -3,5 +3,5 @@
 
 local Event = game:GetService("ReplicatedStorage").Packages.Knit.Services.PadService.RF.UpgradePad
 Event:InvokeServer(
-    "-1"
+    "10"
 )
