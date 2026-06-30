@@ -29,6 +29,8 @@ local updateEvent = game:GetService("ReplicatedStorage").Remotes.UpdateWashingSt
 local upgradeEvent = game:GetService("ReplicatedStorage").Remotes.BuyUpgrade
 local rebirthEvent = game:GetService("ReplicatedStorage").Remotes.RequestRebirth
 local soapEvent = game:GetService("ReplicatedStorage").Remotes.ClickSoapBottle
+local padEvent = game:GetService("ReplicatedStorage").Remotes.BuyPad
+local pressureEvent = game:GetService("ReplicatedStorage").Remotes.AddPressure
 
 local dirtQueue = {}
 
@@ -42,6 +44,7 @@ end)
 
 local MainTab = Window:CreateTab("Main", "star")
 local PlayerTab = Window:CreateTab("Player", "user")
+local EngineerTab = Window:CreateTab("Engineer", "wrench")
 local MiscTab = Window:CreateTab("Misc", "settings")
 
 -- ══════════════════════════════
@@ -192,8 +195,6 @@ task.spawn(function()
    end
 end)
 
-PlayerTab:CreateSection("Soap Upgrades")
-
 PlayerTab:CreateToggle({
    Name = "Auto Buy Double Rebirth Value",
    CurrentValue = false,
@@ -237,6 +238,74 @@ task.spawn(function()
 end)
 
 -- ══════════════════════════════
+--        ENGINEER TAB
+-- ══════════════════════════════
+
+EngineerTab:CreateSection("Engineer Upgrades")
+
+EngineerTab:CreateToggle({
+   Name = "Auto Buy Engineer Work Speed",
+   CurrentValue = false,
+   Flag = "AutoEngineerWorkSpeed",
+   Callback = function(Value)
+      _G.AutoEngineerWorkSpeed = Value
+   end,
+})
+
+task.spawn(function()
+   while true do
+      task.wait(0.5)
+      if _G.AutoEngineerWorkSpeed then
+         upgradeEvent:FireServer("EngineerWorkSpeed", false)
+      end
+   end
+end)
+
+EngineerTab:CreateSection("Pressure Upgrades")
+
+EngineerTab:CreateToggle({
+   Name = "Auto Buy Double Rebirth Value",
+   CurrentValue = false,
+   Flag = "AutoPressureDoubleRebirth",
+   Callback = function(Value)
+      _G.AutoPressureDoubleRebirth = Value
+   end,
+})
+
+EngineerTab:CreateToggle({
+   Name = "Auto Buy Double Dirt Value",
+   CurrentValue = false,
+   Flag = "AutoPressureDoubleDirt",
+   Callback = function(Value)
+      _G.AutoPressureDoubleDirt = Value
+   end,
+})
+
+EngineerTab:CreateToggle({
+   Name = "Auto Buy Increase Pressure Value",
+   CurrentValue = false,
+   Flag = "AutoIncreasePressureValue",
+   Callback = function(Value)
+      _G.AutoIncreasePressureValue = Value
+   end,
+})
+
+task.spawn(function()
+   while true do
+      task.wait(0.5)
+      if _G.AutoPressureDoubleRebirth then
+         pressureEvent:FireServer("Pressure_DoubleRebirthValue", false)
+      end
+      if _G.AutoPressureDoubleDirt then
+         pressureEvent:FireServer("Pressure_DoubleDirtValue", false)
+      end
+      if _G.AutoIncreasePressureValue then
+         pressureEvent:FireServer("Pressure_IncreasePressureValue", false)
+      end
+   end
+end)
+
+-- ══════════════════════════════
 --        MISC TAB
 -- ══════════════════════════════
 
@@ -263,31 +332,6 @@ MiscTab:CreateButton({
       })
    end,
 })
-
-MiscTab:CreateSection("Buy Pads")
-
-local padEvent = game:GetService("ReplicatedStorage").Remotes.BuyPad
-
-MiscTab:CreateToggle({
-   Name = "Auto Buy All Pads (Tree 1-1 to 1-20)",
-   CurrentValue = false,
-   Flag = "AutoBuyPads",
-   Callback = function(Value)
-      _G.AutoBuyPads = Value
-   end,
-})
-
-task.spawn(function()
-   while true do
-      task.wait(0.5)
-      if _G.AutoBuyPads then
-         for i = 1, 20 do
-            padEvent:FireServer("Tree1-" .. i)
-            task.wait(0.1)
-         end
-      end
-   end
-end)
 
 MiscTab:CreateSection("Rebirth")
 
@@ -318,6 +362,29 @@ task.spawn(function()
       task.wait(1)
       if _G.AutoRebirth then
          rebirthEvent:FireServer(false)
+      end
+   end
+end)
+
+MiscTab:CreateSection("Buy Pads")
+
+MiscTab:CreateToggle({
+   Name = "Auto Buy All Pads (Tree 1-1 to 1-20)",
+   CurrentValue = false,
+   Flag = "AutoBuyPads",
+   Callback = function(Value)
+      _G.AutoBuyPads = Value
+   end,
+})
+
+task.spawn(function()
+   while true do
+      task.wait(0.5)
+      if _G.AutoBuyPads then
+         for i = 1, 20 do
+            padEvent:FireServer("Tree1-" .. i)
+            task.wait(0.1)
+         end
       end
    end
 end)
