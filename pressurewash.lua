@@ -20,27 +20,29 @@ local Window = Rayfield:CreateWindow({
 })
 
 -- ══════════════════════════════
+--           REMOTES
+-- ══════════════════════════════
+
+local spawnEvent = game:GetService("ReplicatedStorage").Remotes.SpawnDirtClient
+local washEvent = game:GetService("ReplicatedStorage").Remotes.WashDirt
+local updateEvent = game:GetService("ReplicatedStorage").Remotes.UpdateWashingStatus
+local upgradeEvent = game:GetService("ReplicatedStorage").Remotes.BuyUpgrade
+local rebirthEvent = game:GetService("ReplicatedStorage").Remotes.RequestRebirth
+local soapEvent = game:GetService("ReplicatedStorage").Remotes.ClickSoapBottle
+
+local dirtQueue = {}
+
+spawnEvent.OnClientEvent:Connect(function(uuid, dirtType, ...)
+   table.insert(dirtQueue, uuid)
+end)
+
+-- ══════════════════════════════
 --           TABS
 -- ══════════════════════════════
 
 local MainTab = Window:CreateTab("Main", "star")
 local PlayerTab = Window:CreateTab("Player", "user")
 local MiscTab = Window:CreateTab("Misc", "settings")
-
--- ══════════════════════════════
---        REMOTES
--- ══════════════════════════════
-
-local spawnEvent = game:GetService("ReplicatedStorage").Remotes.SpawnDirtClient
-local washEvent = game:GetService("ReplicatedStorage").Remotes.WashDirt
-local updateEvent = game:GetService("ReplicatedStorage").Remotes.UpdateWashingStatus
-
-local dirtQueue = {}
-
--- Listen for new dirt spawning and queue UUIDs
-spawnEvent.OnClientEvent:Connect(function(uuid, dirtType, ...)
-   table.insert(dirtQueue, uuid)
-end)
 
 -- ══════════════════════════════
 --        MAIN TAB
@@ -116,15 +118,120 @@ PlayerTab:CreateToggle({
    end,
 })
 
-PlayerTab:CreateLabel("Dirt in queue: 0", "droplets", Color3.fromRGB(255, 255, 255), false)
-
--- Auto wash loop
 task.spawn(function()
    while true do
       task.wait(0.05)
       if _G.AutoWash and #dirtQueue > 0 then
          local uuid = table.remove(dirtQueue, 1)
          washEvent:FireServer(uuid)
+      end
+   end
+end)
+
+PlayerTab:CreateSection("Dirt Upgrades")
+
+PlayerTab:CreateToggle({
+   Name = "Auto Buy Spawn Rate",
+   CurrentValue = false,
+   Flag = "AutoSpawnRate",
+   Callback = function(Value)
+      _G.AutoSpawnRate = Value
+   end,
+})
+
+PlayerTab:CreateToggle({
+   Name = "Auto Buy Dirt Value",
+   CurrentValue = false,
+   Flag = "AutoDirtValue",
+   Callback = function(Value)
+      _G.AutoDirtValue = Value
+   end,
+})
+
+PlayerTab:CreateToggle({
+   Name = "Auto Buy Dirt Amount",
+   CurrentValue = false,
+   Flag = "AutoDirtAmount",
+   Callback = function(Value)
+      _G.AutoDirtAmount = Value
+   end,
+})
+
+task.spawn(function()
+   while true do
+      task.wait(0.5)
+      if _G.AutoSpawnRate then
+         upgradeEvent:FireServer("SpawnRate", false)
+      end
+      if _G.AutoDirtValue then
+         upgradeEvent:FireServer("DirtValue", true)
+      end
+      if _G.AutoDirtAmount then
+         upgradeEvent:FireServer("DirtAmount", false)
+      end
+   end
+end)
+
+PlayerTab:CreateSection("Soap Bottle")
+
+PlayerTab:CreateToggle({
+   Name = "Auto Click Soap Bottle",
+   CurrentValue = false,
+   Flag = "AutoSoap",
+   Callback = function(Value)
+      _G.AutoSoap = Value
+   end,
+})
+
+task.spawn(function()
+   while true do
+      task.wait(0.05)
+      if _G.AutoSoap then
+         soapEvent:FireServer()
+      end
+   end
+end)
+
+PlayerTab:CreateSection("Soap Upgrades")
+
+PlayerTab:CreateToggle({
+   Name = "Auto Buy Double Rebirth Value",
+   CurrentValue = false,
+   Flag = "AutoDoubleRebirthValue",
+   Callback = function(Value)
+      _G.AutoDoubleRebirthValue = Value
+   end,
+})
+
+PlayerTab:CreateToggle({
+   Name = "Auto Buy Double Dirt Value",
+   CurrentValue = false,
+   Flag = "AutoDoubleDirtValue",
+   Callback = function(Value)
+      _G.AutoDoubleDirtValue = Value
+   end,
+})
+
+PlayerTab:CreateToggle({
+   Name = "Auto Buy Autoclick",
+   CurrentValue = false,
+   Flag = "AutoBuyAutoclick",
+   Callback = function(Value)
+      _G.AutoBuyAutoclick = Value
+   end,
+})
+
+task.spawn(function()
+   while true do
+      task.wait(0.5)
+      if _G.AutoDoubleRebirthValue then
+         upgradeEvent:FireServer("DoubleRebirthValue", false)
+      end
+      if _G.AutoDoubleDirtValue then
+         upgradeEvent:FireServer("DoubleDirtValue", false)
+      end
+      if _G.AutoBuyAutoclick then
+         upgradeEvent:FireServer("Autoclick", false)
       end
    end
 end)
@@ -156,6 +263,66 @@ MiscTab:CreateButton({
       })
    end,
 })
+
+MiscTab:CreateSection("Buy Pads")
+
+local padEvent = game:GetService("ReplicatedStorage").Remotes.BuyPad
+
+MiscTab:CreateToggle({
+   Name = "Auto Buy All Pads (Tree 1-1 to 1-20)",
+   CurrentValue = false,
+   Flag = "AutoBuyPads",
+   Callback = function(Value)
+      _G.AutoBuyPads = Value
+   end,
+})
+
+task.spawn(function()
+   while true do
+      task.wait(0.5)
+      if _G.AutoBuyPads then
+         for i = 1, 20 do
+            padEvent:FireServer("Tree1-" .. i)
+            task.wait(0.1)
+         end
+      end
+   end
+end)
+
+MiscTab:CreateSection("Rebirth")
+
+MiscTab:CreateButton({
+   Name = "Rebirth",
+   Callback = function()
+      rebirthEvent:FireServer(false)
+      Rayfield:Notify({
+         Title = "Rebirth",
+         Content = "Rebirth requested!",
+         Duration = 3,
+         Image = "refresh-cw"
+      })
+   end,
+})
+
+MiscTab:CreateToggle({
+   Name = "Auto Rebirth",
+   CurrentValue = false,
+   Flag = "AutoRebirth",
+   Callback = function(Value)
+      _G.AutoRebirth = Value
+   end,
+})
+
+task.spawn(function()
+   while true do
+      task.wait(1)
+      if _G.AutoRebirth then
+         rebirthEvent:FireServer(false)
+      end
+   end
+end)
+
+MiscTab:CreateSection("Anti AFK")
 
 MiscTab:CreateToggle({
    Name = "Anti AFK",
